@@ -5,42 +5,78 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Weather Now</title>
 
-	<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+	
 
 	<link rel="stylesheet" href="style.css">
-	
+
 </head>
 <body>
 
-	<div class="container">
+<div class="container">
 
-  <!-- Search -->
-  <div class="search">
-    <input type="text" id="cityInput" placeholder="Enter city">
-    <button id="searchBtn">Search</button>
-  </div>
+  	<div class="search">
+    	<input type="text" id="cityInput" placeholder="Enter city">
+    	<button id="searchBtn">Search</button>
+  	</div>
 
-  <!-- Error -->
-  <div id="error" class="hidden"></div>
+  
+  	<div id="error" class="hidden"></div>
 
-  <!-- Current Weather -->
-  <div id="currentWeather" class="card skeleton">
-    <h2 id="cityName"></h2>
-    <p id="temp"></p>
-    <p id="desc"></p>
-    <p id="humidity"></p>
-    <p id="wind"></p>
-    <p id="time"></p>
-  </div>
+  
+  	<div id="currentWeather" class="card skeleton">
+    	<h2 id="cityName"></h2>
+    	<p id="temp"></p>
+    	<p id="desc"></p>
+    	<p id="humidity"></p>
+    	<p id="wind"></p>
+    	<p id="time"></p>
+  	</div>
 
-  <!-- Forecast -->
-  <div id="forecast" class="forecast">
+  	<div id="forecast" class="forecast">
     <!-- 7 cards -->
-  </div>
+  	</div>
 
 </div>
 
-<script src="app.js"></script>
+<script>
+
+	function showForecastSkeletons() {
+  		var row = document.getElementById("forecast-row");
+  		row.innerHTML = "";
+  		for (var i = 0; i < 7; i++) {
+    	row.innerHTML += '<div class="day-card"><div class="skeleton">day</div>...';
+  		}
+	}
+
+	var CODES = {
+  		0: "Clear ☀️",
+  		1: "Mainly Clear 🌤️",
+  		2: "Partly Cloudy ⛅",
+  		3: "Overcast ☁️",
+  		61: "Rain 🌧️"
+	};
+
+	function getWeather(code) {
+  		return CODES[code] || ["Unknown", "❓"];
+	}
+
+
+	async function getCoords(city) {
+  var controller = new AbortController();
+  var timer = setTimeout(function() { controller.abort(); }, 10000); // 10s timeout
+
+  var url = "https://geocoding-api.open-meteo.com/v1/search?name=" + encodeURIComponent(city) + "&count=1";
+  var res = await fetch(url, { signal: controller.signal });
+  clearTimeout(timer);
+
+  if (!res.ok) throw new Error("Geocoding error: " + res.status); // Step 16
+  var data = await res.json();
+  if (!data.results || data.results.length === 0) return null;    // Step 6
+
+  return { name: data.results[0].name, lat: data.results[0].latitude, ... };
+}
+
+</script>
 
 
 
