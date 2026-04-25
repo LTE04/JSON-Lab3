@@ -76,6 +76,32 @@
   return { name: data.results[0].name, lat: data.results[0].latitude, ... };
 }
 
+	async function fetchWeather(lat, lon, timezone) {
+  var url = "https://api.open-meteo.com/v1/forecast?latitude=" + lat
+    + "&longitude=" + lon
+    + "&current_weather=true"
+    + "&hourly=relativehumidity_2m,windspeed_10m"
+    + "&daily=temperature_2m_max,temperature_2m_min,weathercode"
+    + "&forecast_days=7";
+
+  var res = await fetch(url);
+  return await res.json();
+}
+
+	function fillCurrentCard(cityInfo, data) {
+  var cw   = data.current_weather;
+  var info = getWeather(cw.weathercode); // ["Slight rain", "🌧️"]
+
+  document.getElementById("city-name").textContent   = cityInfo.name + " " + info[1];
+  document.getElementById("temperature").textContent = cw.temperature + "°C";
+  document.getElementById("humidity").textContent    = "💧 " + data.hourly.relativehumidity_2m[0] + "%";
+
+  // Remove the skeleton class so text becomes visible
+  unSkeleton("city-name");
+  unSkeleton("temperature");
+  // ...
+}
+
 </script>
 
 
