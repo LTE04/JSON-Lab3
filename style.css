@@ -19,8 +19,8 @@
 
 body {
   font-family: Arial, sans-serif;  /* plain readable font */
-  background: #1a1a2e;             /* dark navy background */
-  color: white;                    /* all text is white */
+  background: #f0f4f8;             /* dark navy background */
+  color: #222;                    /* all text is white */
   padding: 20px;                   /* space around the edges */
   text-align: center;              /* everything centered */
 }
@@ -40,7 +40,7 @@ input {
 button {
   padding: 8px 16px;     /* space inside the button */
   font-size: 1rem;
-  background: #0f3460;   /* dark blue button */
+  background: #2980b9;   /* dark blue button */
   color: white;
   border: none;
   border-radius: 6px;
