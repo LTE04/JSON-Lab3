@@ -6,7 +6,6 @@
 	<title>Weather Now</title>
 
 	
-
 	<link rel="stylesheet" href="style.css">
 
 </head>
@@ -100,6 +99,30 @@
   unSkeleton("city-name");
   unSkeleton("temperature");
   // ...
+}
+
+
+//task3 jguery ajax
+function fetchTime(timezone) {
+  $.getJSON("https://worldtimeapi.org/api/timezone/" + timezone)
+
+    .done(function(data) {
+      // Success: show real local time
+      var timeStr = new Date(data.datetime).toLocaleTimeString();
+      document.getElementById("local-time").textContent = "🕐 " + timeStr;
+      unSkeleton("local-time");
+    })
+
+    .fail(function() {
+      // Failed: fall back to the device clock
+      document.getElementById("local-time").textContent = "🕐 " + new Date().toLocaleTimeString();
+      unSkeleton("local-time");
+    })
+
+    .always(function() {
+      // Runs no matter what — log timestamp to console
+      console.log("WorldTimeAPI done at: " + new Date().toISOString());
+    });
 }
 
 </script>
