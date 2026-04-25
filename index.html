@@ -4,8 +4,46 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Weather Now</title>
+
+	<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+
+	<link rel="stylesheet" href="style.css">
+	
 </head>
 <body>
+
+	<div class="container">
+
+  <!-- Search -->
+  <div class="search">
+    <input type="text" id="cityInput" placeholder="Enter city">
+    <button id="searchBtn">Search</button>
+  </div>
+
+  <!-- Error -->
+  <div id="error" class="hidden"></div>
+
+  <!-- Current Weather -->
+  <div id="currentWeather" class="card skeleton">
+    <h2 id="cityName"></h2>
+    <p id="temp"></p>
+    <p id="desc"></p>
+    <p id="humidity"></p>
+    <p id="wind"></p>
+    <p id="time"></p>
+  </div>
+
+  <!-- Forecast -->
+  <div id="forecast" class="forecast">
+    <!-- 7 cards -->
+  </div>
+
+</div>
+
+<script src="app.js"></script>
+
+
+
 	
 </body>
 </html>
