@@ -40,7 +40,7 @@
 <script>
 
 	function showForecastSkeletons() {
-  		var row = document.getElementById("forecast-row");
+  		var row = document.getElementById("forecast");
   		row.innerHTML = "";
   		for (var i = 0; i < 7; i++) {
     	row.innerHTML += '<div class="day-card"><div class="skeleton">day</div>...';
@@ -72,7 +72,9 @@
   var data = await res.json();
   if (!data.results || data.results.length === 0) return null;    // Step 6
 
-  return { name: data.results[0].name, lat: data.results[0].latitude, ... };
+  return { name: data.results[0].name, country: data.results[0].country,
+         lat: data.results[0].latitude, lon: data.results[0].longitude,
+         timezone: data.results[0].timezone };
 }
 
 	async function fetchWeather(lat, lon, timezone) {
@@ -91,13 +93,13 @@
   var cw   = data.current_weather;
   var info = getWeather(cw.weathercode); // ["Slight rain", "🌧️"]
 
-  document.getElementById("city-name").textContent   = cityInfo.name + " " + info[1];
-  document.getElementById("temperature").textContent = cw.temperature + "°C";
+  document.getElementById("desc").textContent = getDesc(cw.weathercode);
+  document.getElementById("temp").textContent = cw.temperature + "°C";
   document.getElementById("humidity").textContent    = "💧 " + data.hourly.relativehumidity_2m[0] + "%";
 
   // Remove the skeleton class so text becomes visible
-  unSkeleton("city-name");
-  unSkeleton("temperature");
+  unSkeleton("cityName");
+  unSkeleton("temp");
   // ...
 }
 
@@ -124,6 +126,36 @@ function fetchTime(timezone) {
       console.log("WorldTimeAPI done at: " + new Date().toISOString());
     });
 }
+
+//task4
+	if (!city || city.trim().length < 2) {
+  document.getElementById("warn-msg").textContent = "⚠️ Type at least 2 characters.";
+  return; // stop here, no API call
+}
+
+	if (!res.ok) throw new Error("Error: " + res.status);
+
+	var controller = new AbortController();
+var timer = setTimeout(function() { controller.abort(); }, 10000);
+var res = await fetch(url, { signal: controller.signal });
+clearTimeout(timer);
+
+	try {
+  var cityInfo = await getCoords(city);
+  var weatherData = await fetchWeather(...);
+  fillCurrentCard(...);
+} catch (err) {
+  if (err.name === "AbortError") showError("⏱️ Timed out.");
+  else showError("❌ " + err.message);
+}
+
+	document.getElementById("city-input").addEventListener("input", function() {
+  clearTimeout(typeTimer);          // cancel old timer every keystroke
+  var city = this.value.trim();
+  typeTimer = setTimeout(function() {
+    if (city.length >= 2) search(city);
+  }, 500);                          // only search after 500ms of silence
+});
 
 </script>
 

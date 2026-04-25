@@ -13,3 +13,78 @@
 .hidden {
   display: none;
 }
+
+#forecast-row { display: flex; overflow-x: auto; }
+.day-card     { min-width: 100px; flex-shrink: 0; }
+
+body {
+  font-family: Arial, sans-serif;  /* plain readable font */
+  background: #1a1a2e;             /* dark navy background */
+  color: white;                    /* all text is white */
+  padding: 20px;                   /* space around the edges */
+  text-align: center;              /* everything centered */
+}
+
+.search { 
+  margin-bottom: 16px;   /* gap below the search bar */
+}
+
+input {
+  padding: 8px;          /* space inside the box */
+  width: 220px;          /* how wide the input is */
+  font-size: 1rem;       /* normal text size */
+  border-radius: 6px;    /* rounded corners */
+  border: none;          /* remove default border */
+}
+
+button {
+  padding: 8px 16px;     /* space inside the button */
+  font-size: 1rem;
+  background: #0f3460;   /* dark blue button */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;       /* hand cursor on hover */
+  margin-left: 6px;      /* gap between input and button */
+}
+
+#error {
+  display: none;           /* hidden until there is an error */
+  background: #922b21;     /* dark red */
+  padding: 12px;
+  border-radius: 8px;
+  max-width: 400px;
+  margin: 10px auto;       /* centered */
+}
+
+#currentWeather {
+  background: #16213e;     /* dark blue card */
+  border-radius: 12px;     /* rounded card */
+  padding: 20px;           /* space inside */
+  max-width: 400px;        /* not too wide */
+  margin: 20px auto;       /* centered with gap above/below */
+  text-align: left;        /* text inside is left aligned */
+}
+
+#forecast {
+  display: flex;           /* put cards side by side */
+  gap: 8px;               /* space between each card */
+  overflow-x: auto;        /* scrollbar if cards don't fit */
+  max-width: 800px;
+  margin: 0 auto;          /* centered */
+  padding-bottom: 10px;
+}
+
+.day-card {
+  background: #16213e;
+  border-radius: 10px;
+  padding: 12px;
+  min-width: 100px;        /* each card at least 100px wide */
+  text-align: center;
+  flex-shrink: 0;          /* stop cards from squishing */
+}
+
+#warn-msg {
+  color: orange;    /* warning text is orange */
+  margin: 6px 0;
+}
