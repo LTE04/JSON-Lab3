@@ -136,6 +136,7 @@ function showError(msg) {
       + "&hourly=relativehumidity_2m,windspeed_10m"
       + "&daily=temperature_2m_max,temperature_2m_min,weathercode"
       + "&forecast_days=7";
+      + "timezone=auto";
 
     var res = await fetch(url, { signal: controller.signal });       // ADD: pass signal
     clearTimeout(timer);                                             // ADD: cancel timer on success

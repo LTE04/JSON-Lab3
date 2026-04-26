@@ -19,7 +19,7 @@
 
 body {
   font-family: Arial, sans-serif;  /* plain readable font */
-  background: #f0f4f8;             /* dark navy background */
+  background: #b5cfe8;             /* dark navy background */
   color: #222;                    /* all text is white */
   padding: 20px;                   /* space around the edges */
   text-align: center;              /* everything centered */
@@ -40,7 +40,7 @@ input {
 button {
   padding: 8px 16px;     /* space inside the button */
   font-size: 1rem;
-  background: #2980b9;   /* dark blue button */
+  background: #405db4;   /* dark blue button */
   color: white;
   border: none;
   border-radius: 6px;
@@ -58,12 +58,13 @@ button {
 }
 
 #currentWeather {
-  background: #357fb0;     /* dark blue card */
+  background: #6e7ccb;     /* dark blue card */
   border-radius: 12px;     /* rounded card */
   padding: 20px;           /* space inside */
   max-width: 400px;        /* not too wide */
   margin: 20px auto;       /* centered with gap above/below */
   text-align: left;        /* text inside is left aligned */
+  color: white;
 }
 
 #forecast {
@@ -76,7 +77,7 @@ button {
 }
 
 .day-card {
-  background: #16213e;
+  background: #4477d6;
   border-radius: 10px;
   padding: 12px;
   min-width: 100px;        /* each card at least 100px wide */
@@ -85,7 +86,7 @@ button {
 }
 
 #warn-msg {
-  color: orange;    /* warning text is orange */
+  color: rgb(153, 111, 32);    /* warning text is orange */
   margin: 6px 0;
 }
 
