@@ -45,11 +45,28 @@
 var typeTimer;
 
 var CODES = {
-  0: "Clear ☀️",
-  1: "Mainly Clear 🌤️",
-  2: "Partly Cloudy ⛅",
-  3: "Overcast ☁️",
-  61: "Rain 🌧️"
+  0:  "Clear sky ☀️",
+  1:  "Mainly clear 🌤️",
+  2:  "Partly cloudy ⛅",
+  3:  "Overcast ☁️",
+  45: "Fog 🌫️",
+  48: "Icy fog 🌫️",
+  51: "Light drizzle 🌦️",
+  53: "Moderate drizzle 🌦️",
+  55: "Dense drizzle 🌧️",
+  61: "Slight rain 🌧️",
+  63: "Moderate rain 🌧️",
+  65: "Heavy rain 🌧️",
+  71: "Slight snow 🌨️",
+  73: "Moderate snow ❄️",
+  75: "Heavy snow ❄️",
+  77: "Snow grains 🌨️",
+  80: "Slight showers 🌦️",
+  81: "Moderate showers 🌧️",
+  82: "Violent showers ⛈️",
+  95: "Thunderstorm ⛈️",
+  96: "Thunderstorm + hail ⛈️",
+  99: "Thunderstorm + hail ⛈️"
 };
 
 //function
@@ -66,9 +83,10 @@ function getDesc(code) {
   return CODES[code] || "Unknown ❓";
 }
 
-function removeSkeleton(id) {
+function unSkeleton(id) {
   document.getElementById(id).classList.remove("skeleton");
 }
+
 
 function showError(msg) {
   var el = document.getElementById("error");
@@ -145,7 +163,7 @@ function showError(msg) {
   document.getElementById("wind").textContent =
     "💨 " + cw.windspeed + " km/h";
 
-  removeSkeleton("currentWeather");
+  unSkeleton("currentWeather");
 }
 
 // NEW FUNCTION — fills the 7 forecast cards below the main card
@@ -171,7 +189,6 @@ function fillForecast(data) {
   }
 }
 
-
 //task3 jguery ajax
 function fetchTime(timezone) {
   $.getJSON("https://worldtimeapi.org/api/timezone/" + timezone)
@@ -195,8 +212,6 @@ function fetchTime(timezone) {
     });
 }
 
-
-
 //task4
 async function search(city) {
 
@@ -218,6 +233,7 @@ async function search(city) {
     var data = await fetchWeather(cityInfo.lat, cityInfo.lon);
 
     fillCurrentCard(cityInfo, data);
+    fillForecast(data); //7 days card
 
     fetchTime(cityInfo.timezone); // jQuery part
 
