@@ -58,7 +58,7 @@ button {
 }
 
 #currentWeather {
-  background: #16213e;     /* dark blue card */
+  background: #357fb0;     /* dark blue card */
   border-radius: 12px;     /* rounded card */
   padding: 20px;           /* space inside */
   max-width: 400px;        /* not too wide */
@@ -87,4 +87,10 @@ button {
 #warn-msg {
   color: orange;    /* warning text is orange */
   margin: 6px 0;
+}
+
+h1 {
+  font-size: 2rem;
+  color: #16213e;
+  margin-bottom: 16px;
 }

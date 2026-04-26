@@ -4,14 +4,17 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Weather Now</title>
-
+  
 	
 	<link rel="stylesheet" href="style.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 </head>
 <body>
 
 <div class="container">
+
+    <h1>Weather Now ⛅</h1>
 
   	<div class="search">
     	<input type="text" id="cityInput" placeholder="Enter city">
@@ -39,25 +42,52 @@
 
 <script>
 
+var typeTimer;
+
+var CODES = {
+  0: "Clear ☀️",
+  1: "Mainly Clear 🌤️",
+  2: "Partly Cloudy ⛅",
+  3: "Overcast ☁️",
+  61: "Rain 🌧️"
+};
+
+//function
+
 	function showForecastSkeletons() {
   		var row = document.getElementById("forecast");
   		row.innerHTML = "";
   		for (var i = 0; i < 7; i++) {
-    	row.innerHTML += '<div class="day-card"><div class="skeleton">day</div>...';
+    	row.innerHTML += '<div class="day-card"><div class="skeleton">day</div>';
   		}
 	}
 
-	var CODES = {
-  		0: "Clear ☀️",
-  		1: "Mainly Clear 🌤️",
-  		2: "Partly Cloudy ⛅",
-  		3: "Overcast ☁️",
-  		61: "Rain 🌧️"
-	};
+function getDesc(code) {
+  return CODES[code] || "Unknown ❓";
+}
+
+function removeSkeleton(id) {
+  document.getElementById(id).classList.remove("skeleton");
+}
+
+function showError(msg) {
+  var el = document.getElementById("error");
+  if (!msg) {
+    el.style.display = "none";
+  } else {
+    el.style.display = "block";
+    el.textContent = msg;
+  }
+}
 
 	function getWeather(code) {
   		return CODES[code] || ["Unknown", "❓"];
 	}
+
+  document.getElementById("searchBtn").addEventListener("click", function () {
+  var city = document.getElementById("cityInput").value.trim();
+  search(city);
+});
 
 
 	async function getCoords(city) {
@@ -77,30 +107,68 @@
          timezone: data.results[0].timezone };
 }
 
-	async function fetchWeather(lat, lon, timezone) {
-  var url = "https://api.open-meteo.com/v1/forecast?latitude=" + lat
-    + "&longitude=" + lon
-    + "&current_weather=true"
-    + "&hourly=relativehumidity_2m,windspeed_10m"
-    + "&daily=temperature_2m_max,temperature_2m_min,weathercode"
-    + "&forecast_days=7";
+	async function fetchWeather(lat, lon) {
 
-  var res = await fetch(url);
-  return await res.json();
-}
+    var controller = new AbortController();                          
+    var timer = setTimeout(function() { controller.abort(); }, 10000);
+
+    var url = "https://api.open-meteo.com/v1/forecast?latitude=" + lat
+      + "&longitude=" + lon
+      + "&current_weather=true"
+      + "&hourly=relativehumidity_2m,windspeed_10m"
+      + "&daily=temperature_2m_max,temperature_2m_min,weathercode"
+      + "&forecast_days=7";
+
+    var res = await fetch(url, { signal: controller.signal });       // ADD: pass signal
+    clearTimeout(timer);                                             // ADD: cancel timer on success
+
+    if (!res.ok) throw new Error("Weather error: " + res.status);
+
+    return await res.json();
+  }
 
 	function fillCurrentCard(cityInfo, data) {
-  var cw   = data.current_weather;
-  var info = getWeather(cw.weathercode); // ["Slight rain", "🌧️"]
+  var cw = data.current_weather;
 
-  document.getElementById("desc").textContent = getDesc(cw.weathercode);
-  document.getElementById("temp").textContent = cw.temperature + "°C";
-  document.getElementById("humidity").textContent    = "💧 " + data.hourly.relativehumidity_2m[0] + "%";
+  document.getElementById("cityName").textContent =
+    cityInfo.name + ", " + cityInfo.country;
 
-  // Remove the skeleton class so text becomes visible
-  unSkeleton("cityName");
-  unSkeleton("temp");
-  // ...
+  document.getElementById("temp").textContent =
+    cw.temperature + "°C";
+
+  document.getElementById("desc").textContent =
+    getDesc(cw.weathercode);
+
+  document.getElementById("humidity").textContent =
+    "💧 " + data.hourly.relativehumidity_2m[0] + "%";
+
+  document.getElementById("wind").textContent =
+    "💨 " + cw.windspeed + " km/h";
+
+  removeSkeleton("currentWeather");
+}
+
+// NEW FUNCTION — fills the 7 forecast cards below the main card
+function fillForecast(data) {
+  var row = document.getElementById("forecast");
+  row.innerHTML = ""; // clear skeletons
+
+  for (var i = 0; i < 7; i++) {
+    var date    = new Date(data.daily.time[i] + "T12:00:00");
+    var dayName = date.toLocaleDateString("en-US", { weekday: "short" });
+    var code    = data.daily.weathercode[i];
+    var desc    = getDesc(code);
+    var hi      = Math.round(data.daily.temperature_2m_max[i]) + "°C";
+    var lo      = Math.round(data.daily.temperature_2m_min[i]) + "°C";
+
+    row.innerHTML +=
+      '<div class="day-card">' +
+        '<p><strong>' + dayName + '</strong></p>' +
+        '<p style="font-size:1.4rem">' + desc + '</p>' +
+        '<p style="color:#ff8a65">' + hi + '</p>' +
+        '<p style="color:#90a4ae">' + lo + '</p>' +
+      '</div>';
+  }
 }
 
 
@@ -111,14 +179,14 @@ function fetchTime(timezone) {
     .done(function(data) {
       // Success: show real local time
       var timeStr = new Date(data.datetime).toLocaleTimeString();
-      document.getElementById("local-time").textContent = "🕐 " + timeStr;
-      unSkeleton("local-time");
+      document.getElementById("time").textContent = "🕐 " + timeStr;
+      unSkeleton("time");
     })
 
     .fail(function() {
       // Failed: fall back to the device clock
-      document.getElementById("local-time").textContent = "🕐 " + new Date().toLocaleTimeString();
-      unSkeleton("local-time");
+      document.getElementById("time").textContent = "🕐 " + new Date().toLocaleTimeString();
+      unSkeleton("time");
     })
 
     .always(function() {
@@ -127,29 +195,42 @@ function fetchTime(timezone) {
     });
 }
 
+
+
 //task4
-	if (!city || city.trim().length < 2) {
-  document.getElementById("warn-msg").textContent = "⚠️ Type at least 2 characters.";
-  return; // stop here, no API call
+async function search(city) {
+
+  showError(""); // clear error
+
+  if (!city || city.trim().length < 2) {
+    showError("⚠️ Type at least 2 characters");
+    return;
+  }
+
+  try {
+    var cityInfo = await getCoords(city);
+
+    if (!cityInfo) {
+      showError("❌ City not found");
+      return;
+    }
+
+    var data = await fetchWeather(cityInfo.lat, cityInfo.lon);
+
+    fillCurrentCard(cityInfo, data);
+
+    fetchTime(cityInfo.timezone); // jQuery part
+
+  } catch (err) {
+    if (err.name === "AbortError") {
+      showError("⏱️ Timeout");
+    } else {
+      showError("❌ " + err.message);
+    }
+  }
 }
 
-	if (!res.ok) throw new Error("Error: " + res.status);
-
-	var controller = new AbortController();
-var timer = setTimeout(function() { controller.abort(); }, 10000);
-var res = await fetch(url, { signal: controller.signal });
-clearTimeout(timer);
-
-	try {
-  var cityInfo = await getCoords(city);
-  var weatherData = await fetchWeather(...);
-  fillCurrentCard(...);
-} catch (err) {
-  if (err.name === "AbortError") showError("⏱️ Timed out.");
-  else showError("❌ " + err.message);
-}
-
-	document.getElementById("city-input").addEventListener("input", function() {
+	document.getElementById("cityInput").addEventListener("input", function() {
   clearTimeout(typeTimer);          // cancel old timer every keystroke
   var city = this.value.trim();
   typeTimer = setTimeout(function() {
