@@ -5,7 +5,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Weather Now</title>
   
-	
 	<link rel="stylesheet" href="style.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -21,10 +20,8 @@
     	<button id="searchBtn">Search</button>
   	</div>
 
-  
   	<div id="error" class="hidden"></div>
 
-  
   	<div id="currentWeather" class="card skeleton">
     	<h2 id="cityName"></h2>
     	<p id="temp"></p>
@@ -34,9 +31,7 @@
     	<p id="time"></p>
   	</div>
 
-  	<div id="forecast" class="forecast">
-    <!-- 7 cards -->
-  	</div>
+  	<div id="forecast" class="forecast"> </div>
 
 </div>
 
@@ -70,20 +65,19 @@ var CODES = {
 };
 
 //function
-
-	function showForecastSkeletons() {
+	function showForecastSkeletons() {  //fill forecast row with 7 fake load card
   		var row = document.getElementById("forecast");
-  		row.innerHTML = "";
+  		row.innerHTML = "";   //claer all inside
   		for (var i = 0; i < 7; i++) {
     	row.innerHTML += '<div class="day-card"><div class="skeleton">day</div>';
   		}
 	}
 
-function getDesc(code) {
+function getDesc(code) { //return the code bcm name
   return CODES[code] || "Unknown ❓";
 }
 
-function unSkeleton(id) {
+function unSkeleton(id) { //
   document.getElementById(id).classList.remove("skeleton");
 }
 
@@ -107,25 +101,28 @@ function showError(msg) {
   search(city);
 });
 
-
-	async function getCoords(city) {
+//task2
+	async function getCoords(city) {  //use await inside
   var controller = new AbortController();
   var timer = setTimeout(function() { controller.abort(); }, 10000); // 10s timeout
 
   var url = "https://geocoding-api.open-meteo.com/v1/search?name=" + encodeURIComponent(city) + "&count=1";
-  var res = await fetch(url, { signal: controller.signal });
-  clearTimeout(timer);
+  var res = await fetch(url, { signal: controller.signal });  //send http to url
+  clearTimeout(timer);  //cancel 10s countdown
 
-  if (!res.ok) throw new Error("Geocoding error: " + res.status); // Step 16
+  if (!res.ok) throw new Error("Geocoding error: " + res.status); // s4t16
   var data = await res.json();
-  if (!data.results || data.results.length === 0) return null;    // Step 6
+  if (!data.results || data.results.length === 0) return null;    // S4t16
 
-  return { name: data.results[0].name, country: data.results[0].country,
-         lat: data.results[0].latitude, lon: data.results[0].longitude,
-         timezone: data.results[0].timezone };
+  return { 
+    name: data.results[0].name, 
+    country: data.results[0].country,
+    lat: data.results[0].latitude, 
+    lon: data.results[0].longitude,
+    timezone: data.results[0].timezone };
 }
 
-	async function fetchWeather(lat, lon) {
+	async function fetchWeather(lat, lon) {   //use lat lon return w data from open meteo
 
     var controller = new AbortController();                          
     var timer = setTimeout(function() { controller.abort(); }, 10000);
@@ -134,7 +131,7 @@ function showError(msg) {
       + "&longitude=" + lon
       + "&current_weather=true"
       + "&hourly=relativehumidity_2m,windspeed_10m"
-      + "&daily=temperature_2m_max,temperature_2m_min,weathercode"
+      + "&daily=temperature_2m_max,temperature_2m_min,weathercode"  //the max, mix temp
       + "&forecast_days=7";
       + "timezone=auto";
 
@@ -147,28 +144,27 @@ function showError(msg) {
   }
 
 	function fillCurrentCard(cityInfo, data) {
-  var cw = data.current_weather;
+    var cw = data.current_weather;  //cw=current_weather
 
-  document.getElementById("cityName").textContent =
-    cityInfo.name + ", " + cityInfo.country;
+    document.getElementById("cityName").textContent =
+      cityInfo.name + ", " + cityInfo.country;
 
-  document.getElementById("temp").textContent =
-    cw.temperature + "°C";
+    document.getElementById("temp").textContent =
+      cw.temperature + "°C";
 
-  document.getElementById("desc").textContent =
-    getDesc(cw.weathercode);
+    document.getElementById("desc").textContent =
+      getDesc(cw.weathercode);
 
-  document.getElementById("humidity").textContent =
-    "💧 " + data.hourly.relativehumidity_2m[0] + "%";
+    document.getElementById("humidity").textContent =
+     "💧 " + data.hourly.relativehumidity_2m[0] + "%";
 
-  document.getElementById("wind").textContent =
-    "💨 " + cw.windspeed + " km/h";
+    document.getElementById("wind").textContent =
+      "💨 " + cw.windspeed + " km/h";
 
-  unSkeleton("currentWeather");
-}
+    unSkeleton("currentWeather");   //stop animation, color bcm transparent
+  }
 
-// NEW FUNCTION — fills the 7 forecast cards below the main card
-function fillForecast(data) {
+function fillForecast(data) {   //for 7d
   var row = document.getElementById("forecast");
   row.innerHTML = ""; // clear skeletons
 
@@ -191,7 +187,7 @@ function fillForecast(data) {
 }
 
 //task3 jguery ajax
-function fetchTime(timezone) {
+function fetchTime(timezone) {    //call after weather data show
   $.getJSON("https://worldtimeapi.org/api/timezone/" + timezone)
 
     .done(function(data) {
@@ -214,7 +210,7 @@ function fetchTime(timezone) {
 }
 
 //task4
-async function search(city) {
+async function search(city) {   //main func
 
   showError(""); // clear error
 
@@ -257,8 +253,5 @@ async function search(city) {
 
 </script>
 
-
-
-	
 </body>
 </html>
